@@ -1,6 +1,8 @@
 <template lang="">
 <h1>INICIO</h1>
 
+<!-- {{carga}} -->
+
 <div class="d-grid gap-2 col-6 mx-auto">
 
 <router-link to="/agregar" class="btn btn-success btn-block " >Agregar
@@ -8,10 +10,14 @@
 </div>
 <br>
 
+<div v-if="carga" class="text-center"> <h1>cargado contenido....</h1>
+<pulse-loader :loading="loading" ></pulse-loader>
+
+</div>
 
 
 
-    <ul class="list-group">
+    <ul class="list-group" v-if="!carga">
         <li class="list-group-item" v-for="(item,index) in tareas" :key="index">
             {{item.nombre}} - {{item.id}}
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -28,6 +34,9 @@
 <script>
 
 import {mapActions, mapState} from 'vuex'
+import PulseLoader from 'vue-spinner/src/ScaleLoader.vue'
+import useVuelidate from '@vuelidate/core'
+import { required, email } from '@vuelidate/validators'
 
 
 export default {
@@ -40,7 +49,10 @@ export default {
         ...mapActions(['getTareas','eliminarTarea'])
     },
     computed:{
-        ...mapState(['tareas', 'usuario'])
+        ...mapState(['tareas', 'usuario', 'carga'])
+        },
+        components:{
+            PulseLoader
         }
        
 }

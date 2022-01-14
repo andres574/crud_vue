@@ -8,7 +8,8 @@ export default createStore({
         tareas: [],
         tarea: { nombre: '', id: ' ' },
         usuario: null,
-        error: null
+        error: null,
+        carga: false
 
     },
     mutations: {
@@ -26,6 +27,9 @@ export default createStore({
         },
         setError(state, payload) {
             state.error = payload
+        },
+        cargafirebase(state, payload) {
+            state.carga = payload
         }
     },
     actions: {
@@ -46,12 +50,14 @@ export default createStore({
 
             }).catch(error => {
                 console.log(error)
-                commit('setError', error)
+                commit('setError', error.code)
 
             })
 
         },
         IngresoUsuario({ commit }, usuario) {
+            commit('cargafirebase', true)
+
             auth.signInWithEmailAndPassword(usuario.email, usuario.password).then(res => {
                 console.log(res)
                 const ingresoUsuario = {
@@ -60,9 +66,12 @@ export default createStore({
                 }
                 commit('setUsuario', ingresoUsuario)
                 router.push('/inicio')
+                commit('cargafirebase', true)
+
             }).catch(error => {
                 console.log(error)
-                commit('setError', error)
+                commit('setError', error.code)
+
 
             })
 
@@ -78,18 +87,26 @@ export default createStore({
         },
         getTareas({ commit, state }) {
 
+            commit('cargafirebase', true)
+
             const tareas = []
             db.collection(state.usuario.email).get()
                 .then(res => {
                     res.forEach(doc => {
 
-                        let tarea = doc.data()
-                        tarea.id = doc.id
-                        tareas.push(tarea)
+                            let tarea = doc.data()
+                            tarea.id = doc.id
+                            tareas.push(tarea)
 
-                    })
-                    commit('setTareas', tareas)
+                        })
+                        // setTimeout(() => {
+                    commit('cargafirebase', false)
+
+                    // }, 3000);
+
                 })
+            commit('setTareas', tareas)
+
         },
 
         getTarea({ commit, state }, idTarea) {
@@ -103,20 +120,28 @@ export default createStore({
                 })
         },
         editarTarea({ commit, state }, tarea) {
+            commit('cargafirebase', true)
+
             db.collection(state.usuario.email).doc(tarea.id).update({
                     nombre: tarea.nombre
                 })
                 .then(() => {
+                    commit('cargafirebase', false)
                     console.log('tarea editada')
                     router.push('/inicio')
+
                 })
         },
         agregarTarea({ commit, state }, nombreTarea) {
+            commit('cargafirebase', true)
+
             db.collection(state.usuario.email).add({
                     nombre: nombreTarea
                 })
                 .then(doc => {
                     router.push('/inicio')
+                    commit('cargafirebase', false)
+
 
                 })
         },

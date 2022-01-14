@@ -1,5 +1,6 @@
 <template>
 
+<div class="container">
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
@@ -24,9 +25,6 @@
   </div>
 </nav>
 
-
-
-
   <div id="app" class="container">
 <div class="text-center">
      <router-link to="/inicio">
@@ -37,6 +35,16 @@
 </div>
   </div>
   <router-view/>
+
+
+</div>
+
+
+
+
+
+
+
 </template>
 <script>
 import { mapActions, mapGetters} from 'vuex'
